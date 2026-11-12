@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build a Strong Paragraph — Word Bank Challenge</title>
+<style>
+:root { color-scheme: light; --ink:#203047; --muted:#617086; --line:#d7dfeb; --paper:#fff; --bg:#f3f6fb; --accent:#315caa; --good:#176b45; --bad:#a33333; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+main { max-width:980px; margin:0 auto; padding:28px 18px 48px; }
+header { margin-bottom:20px; }
+h1 { margin:0 0 6px; font-size:clamp(1.6rem,4vw,2.25rem); line-height:1.15; }
+.sub { color:var(--muted); margin:0; }
+.panel { background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:20px; margin:16px 0; box-shadow:0 3px 12px #2030470a; }
+h2 { font-size:1.2rem; margin:0 0 12px; }
+.wordbank { display:flex; flex-wrap:wrap; gap:8px; }
+.word { border:1px solid var(--line); border-radius:999px; padding:5px 11px; background:#f8faff; font-size:.93rem; }
+.instructions { color:var(--muted); margin:0 0 14px; }
+.sentence { margin:0 0 13px; }
+.sentence strong { color:#243f70; }
+select { max-width:100%; min-width:155px; margin:3px 2px; padding:7px 9px; border:1px solid #aebbd0; border-radius:8px; background:#fff; color:var(--ink); font:inherit; font-size:.94rem; }
+select:focus, button:focus { outline:3px solid #9db9f1; outline-offset:2px; }
+.blank { display:inline-flex; flex-wrap:wrap; align-items:center; gap:2px; margin:0 2px; }
+.num { font-weight:700; font-size:.88rem; color:var(--muted); }
+button { border:0; border-radius:10px; padding:10px 16px; font:600 1rem system-ui; cursor:pointer; }
+.primary { background:var(--accent); color:white; }
+.secondary { background:#e9eef7; color:var(--ink); }
+.actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+#feedback { margin-top:16px; padding:13px 15px; border-radius:10px; display:none; }
+#feedback.good { display:block; background:#eaf6ef; color:var(--good); }
+#feedback.bad { display:block; background:#fff0ef; color:var(--bad); }
+#progress { color:var(--muted); font-size:.94rem; margin-top:8px; }
+small { color:var(--muted); }
+@media (max-width:600px) { main{padding:18px 12px 34px} .panel{padding:15px} select{min-width:135px} }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Build a Strong Paragraph</h1>
+  <p class="sub">Fill in each blank using the word bank. Then check your answers and try again!</p>
+</header>
+
+<section class="panel">
+  <h2>Word bank</h2>
+  <p class="instructions">Some choices are used more than once. Choose the best fit for each numbered blank.</p>
+  <div class="wordbank" id="wordbank"></div>
+</section>
+
+<section class="panel">
+  <h2>Complete the paragraph plan</h2>
+  <div id="activity">
+    <p class="sentence"><strong>Sentence One:</strong> <span class="blank" data-n="1"></span></p>
+    <p class="sentence">Make sure to <span class="blank" data-n="2"></span> and <span class="blank" data-n="3"></span> the prompt very clearly.</p>
+    <p class="sentence">Include the <span class="blank" data-n="4"></span> and the <span class="blank" data-n="5"></span>.</p>
+    <p class="sentence">If the prompt puts the title in quotation marks, use <span class="blank" data-n="6"></span>.</p>
+    <p class="sentence">If the prompt puts the title in italics, use <span class="blank" data-n="7"></span>.</p>
+    <p class="sentence"><strong>Sentence Two:</strong> <span class="blank" data-n="8"></span> <span class="blank" data-n="9"></span></p>
+    <p class="sentence"><strong>Sentence Three:</strong> explain using <span class="blank" data-n="10"></span>.</p>
+    <p class="sentence"><strong>Sentence Four:</strong> <span class="blank" data-n="11"></span> <span class="blank" data-n="12"></span></p>
+    <p class="sentence"><strong>Sentence Five:</strong> explain using <span class="blank" data-n="13"></span>.</p>
+    <p class="sentence"><strong>Sentence Six:</strong> <span class="blank" data-n="14"></span> <span class="blank" data-n="15"></span></p>
+    <p class="sentence"><strong>Sentence Seven:</strong> explain using <span class="blank" data-n="16"></span>.</p>
+    <p class="sentence"><strong>Sentence Eight:</strong> <span class="blank" data-n="17"></span> <span class="blank" data-n="18"></span></p>
+    <p class="sentence">Make sure to <span class="blank" data-n="19"></span>, but not <span class="blank" data-n="20"></span> your topic sentence.</p>
+    <p class="sentence"><strong>Maximum character count, including spaces:</strong> <span class="blank" data-n="21"></span></p>
+  </div>
+  <div class="actions">
+    <button class="primary" id="check">Check my answers</button>
+    <button class="secondary" id="show">Show answer key</button>
+    <button class="secondary" id="reset">Start over</button>
+  </div>
+  <div id="feedback" role="status" aria-live="polite"></div>
+  <div id="progress">0 of 21 answered</div>
+</section>
+<p><small>Teacher note: The answer key supplied for the worksheet identifies answers 1–20; the word bank supplies “1,500” for number 21.</small></p>
+</main>
+<script>
+const choices = [
+"First,","repeat","Next,","direct quote","this illustrates","quotation marks","paraphrase","italics",
+"topic sentence","Additionally,","summarize","and this proves","this supports the idea that","1,500",
+"Clearly,","answer","title","reword","author","concluding statement"
+];
+const answers = {
+1:"topic sentence", 2:"reword", 3:"answer", 4:"author", 5:"title",
+6:"quotation marks", 7:"italics", 8:"First,", 9:"direct quote",
+10:"this illustrates", 11:"Next,", 12:"paraphrase", 13:"and this proves",
+14:"Additionally,", 15:"direct quote", 16:"this supports the idea that",
+17:"Clearly,", 18:"concluding statement", 19:"summarize", 20:"repeat", 21:"1,500"
+};
+const bank = document.getElementById("wordbank");
+choices.forEach((w,i)=>{ const s=document.createElement("span"); s.className="word"; s.textContent=w; bank.appendChild(s); });
+const selects = {};
+document.querySelectorAll(".blank").forEach(el=>{
+  const n=Number(el.dataset.n);
+  const label=document.createElement("span"); label.className="num"; label.textContent=n+".";
+  const sel=document.createElement("select"); sel.setAttribute("aria-label","Answer for blank "+n);
+  const placeholder=document.createElement("option"); placeholder.value=""; placeholder.textContent="Choose…"; sel.appendChild(placeholder);
+  choices.forEach(w=>{const o=document.createElement("option");o.value=w;o.textContent=w;sel.appendChild(o);});
+  sel.addEventListener("change",updateProgress);
+  el.append(label,sel); selects[n]=sel;
+});
+function updateProgress(){
+  const count=Object.values(selects).filter(s=>s.value).length;
+  document.getElementById("progress").textContent=count+" of 21 answered";
+}
+function grade(reveal=false){
+  let correct=0, unanswered=0;
+  Object.entries(answers).forEach(([k,v])=>{
+    const sel=selects[k]; if(!sel.value) unanswered++;
+    if(sel.value===v) correct++;
+    if(reveal) sel.value=v;
+  });
+  updateProgress();
+  const box=document.getElementById("feedback");
+  if(reveal){ box.className="good"; box.textContent="Answer key shown. Read through each choice and notice how it helps build the paragraph."; return; }
+  const pct=Math.round(correct/21*100);
+  box.className=correct===21?"good":"bad";
+  box.textContent=`You got ${correct} out of 21 correct (${pct}%).`+(unanswered?` You still have ${unanswered} blank${unanswered===1?"":"s"} to fill in.`:correct===21?" Excellent work!":" Review the word bank and try again.");
+}
+document.getElementById("check").addEventListener("click",()=>grade(false));
+document.getElementById("show").addEventListener("click",()=>grade(true));
+document.getElementById("reset").addEventListener("click",()=>{
+  Object.values(selects).forEach(s=>s.value="");
+  const box=document.getElementById("feedback");box.className="";box.textContent="";
+  updateProgress();
+});
+</script>
+</body>
+</html>
